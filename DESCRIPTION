@@ -1,0 +1,11 @@
+Package: frak
+Type: Package
+Title: Julia Set Fractal Generator
+Version: 0.1.0
+Author: mikefc
+Maintainer: mikefc <mikefc@coolbutuseless.com>
+Description: Generate julia set fractals.
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 7.1.0
