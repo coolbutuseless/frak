@@ -92,7 +92,7 @@ plot(as.raster(fractal_raster))
 <details>
 <summary> Click to show/hide code to generate gif </summary>
 
-```{r eval = FALSE, echo = FALSE}
+```{r eval = FALSE, echo = TRUE}
 library(foist)
 library(displease)
 library(frak)

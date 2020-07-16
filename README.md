@@ -81,6 +81,45 @@ plot(as.raster(fractal_raster))
 
 <summary> Click to show/hide code to generate gif </summary>
 
+``` r
+library(foist)
+library(displease)
+library(frak)
+
+dir.create('man/figures/anim', showWarnings = FALSE)
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Use {displease} to get a pleasing motion as the zoom is performed
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+N <- 100
+zoom <- displease::seq_ease(1, 1000, n = N, type = 'exp-in')
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Loop: create an image dump it to file.
+# Using {foist} here for fast image output
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+for (i in seq(N)) {
+  frac <- frak::julia(cx = -0.71, zoom = zoom[i], movex = 0.1)
+  mode(frac) <- 'integer'
+  frac <- frac/255
+  
+  filename <- sprintf("man/figures/anim/%03i.png", i)
+  
+  foist::write_png(
+    data                 = frac, 
+    filename             = filename, 
+    pal                  = foist::vir$magma, 
+    convert_to_row_major = FALSE
+  )
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Create the animation using imagemagick and delete the source frames
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+system("convert man/figures/anim/*.png man/figures/anim.gif")
+unlink("man/figures/anim/", recursive = TRUE)
+```
+
 </details>
 
 <img src="man/figures/anim.gif" width="50%" />
@@ -116,10 +155,10 @@ res <- bench::mark(
 
 </details>
 
-| expression          |      min |   median |    itr/sec |
-| :------------------ | -------: | -------: | ---------: |
-| Julia::JuliaImage() | 958.73ms | 958.73ms |   1.043043 |
-| frak::julia()       |   7.84ms |   8.87ms | 107.806805 |
+| expression          |    min | median |    itr/sec |
+| :------------------ | -----: | -----: | ---------: |
+| Julia::JuliaImage() |  1.02s |  1.02s |   0.981843 |
+| frak::julia()       | 8.17ms | 9.46ms | 103.748981 |
 
 <img src="man/figures/README-unnamed-chunk-6-1.png" width="100%" />
 
