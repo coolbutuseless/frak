@@ -42,7 +42,7 @@ You can install from [GitHub](https://github.com/coolbutuseless/frak) with:
 
 ``` r
 # install.package('remotes')
-remotes::install_github('coolbutuseless/frak)
+remotes::install_github('coolbutuseless/frak')
 ```
 
 ## What's in the box?
@@ -93,6 +93,9 @@ plot(as.raster(fractal_raster))
 <summary> Click to show/hide code to generate gif </summary>
 
 ```{r eval = FALSE, echo = TRUE}
+# install.package('remotes')
+# remotes::install_github('coolbutuseless/displease')
+# remotes::install_github('coolbutuseless/foist')
 library(foist)
 library(displease)
 library(frak)

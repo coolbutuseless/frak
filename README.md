@@ -28,7 +28,7 @@ with:
 
 ``` r
 # install.package('remotes')
-remotes::install_github('coolbutuseless/frak)
+remotes::install_github('coolbutuseless/frak')
 ```
 
 ## What’s in the box?
@@ -82,6 +82,9 @@ plot(as.raster(fractal_raster))
 <summary> Click to show/hide code to generate gif </summary>
 
 ``` r
+# install.package('remotes')
+# remotes::install_github('coolbutuseless/displease')
+# remotes::install_github('coolbutuseless/foist')
 library(foist)
 library(displease)
 library(frak)
@@ -155,10 +158,10 @@ res <- bench::mark(
 
 </details>
 
-| expression          |    min | median |    itr/sec |
-| :------------------ | -----: | -----: | ---------: |
-| Julia::JuliaImage() |  1.02s |  1.02s |   0.981843 |
-| frak::julia()       | 8.17ms | 9.46ms | 103.748981 |
+| expression          |     min |   median |    itr/sec |
+| :------------------ | ------: | -------: | ---------: |
+| Julia::JuliaImage() | 898.7ms | 898.75ms |   1.112663 |
+| frak::julia()       |   7.6ms |   8.39ms | 111.225924 |
 
 <img src="man/figures/README-unnamed-chunk-6-1.png" width="100%" />
 
