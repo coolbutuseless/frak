@@ -7,7 +7,7 @@ extern SEXP julia_();
 
 static const R_CallMethodDef CEntries[] = {
   // name    pointer            Num args
-  {"julia_" , (DL_FUNC) &julia_ , 7},
+  {"julia_" , (DL_FUNC) &julia_ , 9},
 
   {NULL , NULL, 0}
 };

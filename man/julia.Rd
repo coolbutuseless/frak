@@ -11,7 +11,9 @@ julia(
   movey = 0,
   zoom = 1,
   size = 400,
-  max_iter = 255
+  max_iter = 255,
+  gamma = 1,
+  equalize = FALSE
 )
 }
 \arguments{
@@ -24,6 +26,10 @@ julia(
 \item{size}{width and height of resulting array}
 
 \item{max_iter}{maximum number of iterations}
+
+\item{gamma}{Gamma correction exponent. Default: 1}
+
+\item{equalize}{Equalize histogram to enhance the contrast. default: FALSE}
 }
 \value{
 raw vector with dimensions (size, size)

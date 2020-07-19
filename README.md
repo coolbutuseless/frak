@@ -42,6 +42,11 @@ particular location veered towards infinity. These values are scaled to
 span the full range from allowable within a raw vector (i.e. the whole
 numbers from 0 to 255)
 
+## What’s new in v0.1.1
+
+  - Histogram equalization added as an option to enhance contrast.
+  - Gamma correction option added to enhance contrast
+
 ## Example: Generate a julia set
 
 ``` r
@@ -60,7 +65,7 @@ plot(as.raster(fractal/255))
 library(viridisLite)
 
 # generate a fractal
-fractal <- julia(cx = -0.74, cy = 0.17, zoom = 3, size = 400, max_iter = 100)
+fractal <- julia(cx = -0.74, cy = 0.17, zoom = 3, size = 400, max_iter = 300)
 mode(fractal) <- 'integer'
 
 # Grab a palette from viridis
@@ -74,6 +79,17 @@ plot(as.raster(fractal_raster))
 ```
 
 <img src="man/figures/README-unnamed-chunk-2-1.png" width="100%" />
+
+## Example with gamma correction
+
+<img src="man/figures/README-unnamed-chunk-3-1.png" width="100%" />
+
+## Example with histogram equalization
+
+Histogram equalization can help enhance the contrast of the result,
+especially if there is a wide variation in iterations across the image.
+
+<img src="man/figures/README-unnamed-chunk-4-1.png" width="100%" />
 
 ## Example: git file rendered from multiple frames
 
@@ -102,7 +118,7 @@ zoom <- displease::seq_ease(1, 1000, n = N, type = 'exp-in')
 # Using {foist} here for fast image output
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 for (i in seq(N)) {
-  frac <- frak::julia(cx = -0.71, zoom = zoom[i], movex = 0.1)
+  frac <- frak::julia(cx = -0.71, zoom = zoom[i], movex = 0.1, equalize = TRUE)
   mode(frac) <- 'integer'
   frac <- frac/255
   
@@ -158,12 +174,12 @@ res <- bench::mark(
 
 </details>
 
-| expression          |     min |   median |    itr/sec |
-| :------------------ | ------: | -------: | ---------: |
-| Julia::JuliaImage() | 898.7ms | 898.75ms |   1.112663 |
-| frak::julia()       |   7.6ms |   8.39ms | 111.225924 |
+| expression          |     min |   median |  itr/sec |
+| :------------------ | ------: | -------: | -------: |
+| Julia::JuliaImage() | 781.5ms | 781.49ms |   1.2796 |
+| frak::julia()       |   7.9ms |   8.25ms | 121.4085 |
 
-<img src="man/figures/README-unnamed-chunk-6-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-8-1.png" width="100%" />
 
 ## Related Software
 

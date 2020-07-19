@@ -26,13 +26,15 @@ NULL
 #' @param zoom zoom level. default 1.
 #' @param movex,movey offsets in centre position
 #' @param max_iter maximum number of iterations
+#' @param gamma Gamma correction exponent. Default: 1
+#' @param equalize Equalize histogram to enhance the contrast. default: FALSE
 #'
 #' @return raw vector with dimensions (size, size)
 #' @export
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 julia <- function(cx = -0.7, cy = 0.27015, movex = 0, movey = 0, zoom = 1,
-                  size = 400, max_iter = 255) {
-  res <- .Call(julia_, cx, cy, movex, movey, zoom, size, max_iter)
+                  size = 400, max_iter = 255, gamma = 1, equalize = FALSE) {
+  res <- .Call(julia_, cx, cy, movex, movey, zoom, size, max_iter, gamma, equalize)
 
   dim(res) <- c(size, size)
   res
