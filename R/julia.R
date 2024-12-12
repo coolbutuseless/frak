@@ -14,11 +14,11 @@ NULL
 #' but rather the count of iterations scaled to be a maximum of 255 - and thus
 #' the data fits in a \code{raw} vector.
 #'
-#' @param cx,cy real and imaginary components of 'c'
-#' @param size width and height of resulting array
+#' @param cx,cy real and imaginary components of 'c'. Default [-0.7, 0.27015]
+#' @param size width and height of resulting square array. Default: 400
 #' @param zoom zoom level. default 1.
-#' @param movex,movey offsets in centre position
-#' @param max_iter maximum number of iterations
+#' @param movex,movey offsets in centre position Default [0, 0]
+#' @param max_iter maximum number of iterations. Default: 256
 #' @param gamma Gamma correction exponent. Default: 1
 #' @param equalize Equalize histogram to enhance the contrast. default: FALSE
 #'
