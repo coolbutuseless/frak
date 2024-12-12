@@ -42,24 +42,19 @@ images that
 You can install from [GitHub](https://github.com/coolbutuseless/frak) with:
 
 ``` r
-# install.package('remotes')
+# install.packages('remotes')
 remotes::install_github('coolbutuseless/frak')
 ```
 
 ## What's in the box?
 
 * `julia(cx, cy, movex, movey, zoom, size, max_iter)` generate a julia set, where
-  `cx` and `cy` are the components of imageinary iteration variable *c*.
+  `cx` and `cy` are the components of imaginary iteration variable *c*.
   
 Returned array of raw values represents the iteration count at which a particular location
 veered towards infinity.  These values are scaled to span the full range from 
 allowable within a raw vector (i.e. the whole numbers from 0 to 255)
 
-
-## What's new in v0.1.1
-
-* Histogram equalization added as an option to enhance contrast.
-* Gamma correction option added to enhance contrast
 
 
 ## Example: Generate a julia set
@@ -240,8 +235,4 @@ plot(res) + theme_bw()
 * [mandelbrot](https://cran.r-project.org/package=mandelbrot) - Generate view on the Mandelbrot Set.
 * [Julia](https://cran.r-project.org/package=Julia) - a Pure R Julia Set generator
 
-## Acknowledgements
 
-* R Core for developing and maintaining such a wonderful language.
-* CRAN maintainers, for patiently shepherding packages onto CRAN and maintaining
-  the repository
