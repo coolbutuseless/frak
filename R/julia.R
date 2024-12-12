@@ -14,13 +14,6 @@ NULL
 #' but rather the count of iterations scaled to be a maximum of 255 - and thus
 #' the data fits in a \code{raw} vector.
 #'
-#' @examples
-#' \dontrun{
-#' js <- julia()
-#' mode(js) <- 'integer'
-#' plot(as.raster(js/255))
-#' }
-#'
 #' @param cx,cy real and imaginary components of 'c'
 #' @param size width and height of resulting array
 #' @param zoom zoom level. default 1.
@@ -30,6 +23,12 @@ NULL
 #' @param equalize Equalize histogram to enhance the contrast. default: FALSE
 #'
 #' @return raw vector with dimensions (size, size)
+#' @examples
+#' \dontrun{
+#' js <- julia()
+#' mode(js) <- 'integer'
+#' plot(as.raster(js/255))
+#' }
 #' @export
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 julia <- function(cx = -0.7, cy = 0.27015, movex = 0, movey = 0, zoom = 1,

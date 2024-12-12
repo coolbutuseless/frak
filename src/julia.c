@@ -1,22 +1,23 @@
 
-#include <stdint.h>
+#define R_NO_REMAP
 #include <R.h>
 #include <Rinternals.h>
+#include <Rdefines.h>
 
-SEXP julia_(SEXP cx_, SEXP cy_, SEXP movex_, SEXP movey_, SEXP zoom_, SEXP size_, SEXP max_iter_,
-            SEXP gamma_, SEXP equalize_) {
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
 
-  int size  = asInteger(size_);
+SEXP julia_(SEXP cx_, SEXP cy_, SEXP movex_, SEXP movey_, SEXP zoom_, SEXP size_, 
+            SEXP max_iter_, SEXP gamma_, SEXP equalize_) {
 
-  double zoom = asReal(zoom_);
-
-  double cx = asReal(cx_); // -0.7;
-  double cy = asReal(cy_); // 0.27015;
-
-  double movex = asReal(movex_);
-  double movey = asReal(movey_);
-
-  int max_iter = asInteger(max_iter_);
+  int size     = Rf_asInteger(size_);
+  double zoom  = Rf_asReal(zoom_);
+  double cx    = Rf_asReal(cx_); // -0.7;
+  double cy    = Rf_asReal(cy_); // 0.27015;
+  double movex = Rf_asReal(movex_);
+  double movey = Rf_asReal(movey_);
+  int max_iter = Rf_asInteger(max_iter_);
 
   double idenom = 1.5/(0.5 * zoom * size);
 
@@ -52,7 +53,7 @@ SEXP julia_(SEXP cx_, SEXP cy_, SEXP movex_, SEXP movey_, SEXP zoom_, SEXP size_
   // Normalise into range [0-255] and cast as byte
   //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   SEXP rarray;
-  PROTECT(rarray = allocVector(RAWSXP, size * size));
+  PROTECT(rarray = Rf_allocVector(RAWSXP, size * size));
   uint8_t *raw_ptr = RAW(rarray);
 
   iter_ptr = iters;
@@ -64,7 +65,7 @@ SEXP julia_(SEXP cx_, SEXP cy_, SEXP movex_, SEXP movey_, SEXP zoom_, SEXP size_
   //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   // Histogram equalization
   //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  int equalize = asLogical(equalize_);
+  int equalize = Rf_asLogical(equalize_);
   if (equalize) {
     uint32_t *hist;
     hist = (uint32_t *)calloc(256, sizeof(uint32_t));
@@ -102,7 +103,7 @@ SEXP julia_(SEXP cx_, SEXP cy_, SEXP movex_, SEXP movey_, SEXP zoom_, SEXP size_
   //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   // Apply gamma correction
   //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  double gamma = asReal(gamma_);
+  double gamma = Rf_asReal(gamma_);
   if (gamma != 1) {
     raw_ptr = RAW(rarray);
     for (int i = 0; i < size * size; i++) {

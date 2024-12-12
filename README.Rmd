@@ -22,6 +22,7 @@ library(frak)
 
 <!-- badges: start -->
 ![](https://img.shields.io/badge/cool-useless-green.svg)
+[![R-CMD-check](https://github.com/coolbutuseless/frak/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/coolbutuseless/frak/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 `frak` is a small R package to generate fractals - currently just [Julia Sets](https://en.wikipedia.org/wiki/Julia_set).

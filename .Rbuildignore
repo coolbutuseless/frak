@@ -3,3 +3,9 @@
 ^README.Rmd$
 ^README.md$
 ^working$
+^\.github$
+^doc$
+^Meta$
+^man/figures$
+^LICENSE.md$
+^.devcontainer$
