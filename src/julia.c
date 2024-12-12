@@ -24,8 +24,10 @@ SEXP julia_(SEXP cx_, SEXP cy_, SEXP movex_, SEXP movey_, SEXP zoom_, SEXP size_
 
   int max = 1;
 
-  int *iters;
-  iters = calloc(size * size, sizeof(int));
+  int *iters = calloc((size_t)(size * size), sizeof(int));
+  if (iters == NULL) {
+    Rf_error("julia_(): Could not allocate memory for 'iters'");
+  }
   int *iter_ptr = iters;
 
   for (int x=0; x < size; x++) {
@@ -34,7 +36,7 @@ SEXP julia_(SEXP cx_, SEXP cy_, SEXP movex_, SEXP movey_, SEXP zoom_, SEXP size_
       double zy = (y - size/2) * idenom + movey;
 
       int iter = 0;
-      while(zx * zx + zy * zy < 4 & iter < max_iter) {
+      while( (zx * zx + zy * zy < 4) & (iter < max_iter)) {
         double tmp = zx * zx - zy * zy + cx;
         zy = 2 * zx * zy + cy;
         zx = tmp;
