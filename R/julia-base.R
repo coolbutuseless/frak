@@ -12,33 +12,37 @@
 julia_r <- function(cx = -0.7, cy = 0.27015, size = 400, max_iter = 255, 
                     gamma = 1) {
   
-  N       <- size
+  N <- size
 
   # Define the (x, y) grid of coordiantes
   x <- matrix(seq(-2, 2, length.out = N), N, N, byrow = TRUE)
   y <- matrix(seq(-2, 2, length.out = N), N, N, byrow = FALSE)
   
-  
+  # Where is the iteration still valid (i.e. hasn't diverged to infinity)
   valid <- rep(T, N * N)
-  idx <- seq_len(N * N)
-  iter <- matrix(0L, N, N)
+  idx   <- which(valid)
   
-  start <- Sys.time()
+  # A matrix to hold the iteration count
+  iter  <- matrix(0L, N, N)
+  
   for (i in seq(max_iter)) {
     # Just calculate on the (x,y) which are still valid
     xt <- x[idx]
     yt <- y[idx]
-    
+
+    # where is the (squared) magnitude still < 4    
     valid[idx] <- (xt*xt + yt*yt) < 4
     
     # terminate early if all values have escaped
     idx <- which(valid)
     if (length(idx) == 0) break;
+    
+    # Bump the iteraton count
     iter[idx] <- iter[idx] + 1L
     
+    # Update which x,y we'll be calculating on (using latest idx)
     xt <- x[idx]
     yt <- y[idx]
-    
     
     # Iterative calculation
     tmp    <- xt * xt - yt * yt + cx 
@@ -46,6 +50,7 @@ julia_r <- function(cx = -0.7, cy = 0.27015, size = 400, max_iter = 255,
     x[idx] <- tmp
   }
   
+  # return the number of iterations
   iter
 }
 
