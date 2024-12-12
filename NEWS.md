@@ -1,3 +1,8 @@
+
+# frac 0.1.1.9000  2024-12-12
+
+* Modernise
+
 # frac 0.1.1  2020-07-19
 
 * Fixed a bug where iterations above 255 were not being handled correctly.

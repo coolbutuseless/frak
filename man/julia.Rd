@@ -47,5 +47,4 @@ js <- julia()
 mode(js) <- 'integer'
 plot(as.raster(js/255))
 }
-
 }

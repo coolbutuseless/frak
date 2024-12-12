@@ -6,6 +6,7 @@
 <!-- badges: start -->
 
 ![](https://img.shields.io/badge/cool-useless-green.svg)
+[![R-CMD-check](https://github.com/coolbutuseless/frak/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/coolbutuseless/frak/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 `frak` is a small R package to generate fractals - currently just [Julia
@@ -14,12 +15,12 @@ Sets](https://en.wikipedia.org/wiki/Julia_set).
 I needed a fast way to generate test images for testing other software,
 with images that
 
-  - are fast to produce
-  - are interesting, not just white noise
-  - 8-bits-per-pixel, so the value can fit in an R `raw` vector or a C
-    `uint8_t` vector.
-  - can be be panned, zoomed and changed with simple changes to the
-    input variables
+- are fast to produce
+- are interesting, not just white noise
+- 8-bits-per-pixel, so the value can fit in an R `raw` vector or a C
+  `uint8_t` vector.
+- can be be panned, zoomed and changed with simple changes to the input
+  variables
 
 ## Installation
 
@@ -27,25 +28,20 @@ You can install from [GitHub](https://github.com/coolbutuseless/frak)
 with:
 
 ``` r
-# install.package('remotes')
+# install.packages('remotes')
 remotes::install_github('coolbutuseless/frak')
 ```
 
 ## What’s in the box?
 
-  - `julia(cx, cy, movex, movey, zoom, size, max_iter)` generate a julia
-    set, where `cx` and `cy` are the components of imageinary iteration
-    variable *c*.
+- `julia(cx, cy, movex, movey, zoom, size, max_iter)` generate a julia
+  set, where `cx` and `cy` are the components of imaginary iteration
+  variable *c*.
 
 Returned array of raw values represents the iteration count at which a
 particular location veered towards infinity. These values are scaled to
 span the full range from allowable within a raw vector (i.e. the whole
 numbers from 0 to 255)
-
-## What’s new in v0.1.1
-
-  - Histogram equalization added as an option to enhance contrast.
-  - Gamma correction option added to enhance contrast
 
 ## Example: Generate a julia set
 
@@ -95,7 +91,10 @@ especially if there is a wide variation in iterations across the image.
 
 <details>
 
-<summary> Click to show/hide code to generate gif </summary>
+<summary>
+
+Click to show/hide code to generate gif
+</summary>
 
 ``` r
 # install.package('remotes')
@@ -150,7 +149,10 @@ the [Julia](https://cran.r-project.org/package=Julia) package on CRAN)
 
 <details>
 
-<summary> Click to show/hide bench::mark() code</summary>
+<summary>
+
+Click to show/hide bench::mark() code
+</summary>
 
 ``` r
 suppressPackageStartupMessages({
@@ -169,27 +171,22 @@ res <- bench::mark(
   `frak::julia()`       = julia(size = size, max_iter = 50),
   check = FALSE
 )
-#> Warning: Some expressions had a GC in every iteration; so filtering is disabled.
+#> Warning: Some expressions had a GC in every iteration; so filtering is
+#> disabled.
 ```
 
 </details>
 
-| expression          |     min |   median |  itr/sec |
-| :------------------ | ------: | -------: | -------: |
-| Julia::JuliaImage() | 781.5ms | 781.49ms |   1.2796 |
-| frak::julia()       |   7.9ms |   8.25ms | 121.4085 |
+| expression          |      min |   median |    itr/sec |
+|:--------------------|---------:|---------:|-----------:|
+| Julia::JuliaImage() | 290.03ms | 293.23ms |   3.410346 |
+| frak::julia()       |   3.88ms |   3.96ms | 250.957374 |
 
 <img src="man/figures/README-unnamed-chunk-8-1.png" width="100%" />
 
 ## Related Software
 
-  - [mandelbrot](https://cran.r-project.org/package=mandelbrot) -
-    Generate view on the Mandelbrot Set.
-  - [Julia](https://cran.r-project.org/package=Julia) - a Pure R Julia
-    Set generator
-
-## Acknowledgements
-
-  - R Core for developing and maintaining such a wonderful language.
-  - CRAN maintainers, for patiently shepherding packages onto CRAN and
-    maintaining the repository
+- [mandelbrot](https://cran.r-project.org/package=mandelbrot) - Generate
+  view on the Mandelbrot Set.
+- [Julia](https://cran.r-project.org/package=Julia) - a Pure R Julia Set
+  generator

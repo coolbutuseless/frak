@@ -3,7 +3,8 @@
 #include <R.h>
 #include <Rinternals.h>
 
-extern SEXP julia_();
+extern SEXP julia_(SEXP cx_, SEXP cy_, SEXP movex_, SEXP movey_, SEXP zoom_, SEXP size_, 
+                   SEXP max_iter_, SEXP gamma_, SEXP equalize_);
 
 static const R_CallMethodDef CEntries[] = {
   // name    pointer            Num args
