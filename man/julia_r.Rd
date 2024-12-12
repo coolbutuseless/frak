@@ -4,7 +4,7 @@
 \alias{julia_r}
 \title{Calculate Julia set using base R matrix operations}
 \usage{
-julia_r(cx = -0.7, cy = 0.27015, size = 400, max_iter = 255, gamma = 1)
+julia_r(cx = -0.7, cy = 0.27015, size = 400, max_iter = 255)
 }
 \arguments{
 \item{cx, cy}{real and imaginary components of 'c'. Default [-0.7, 0.27015]}
@@ -12,15 +12,26 @@ julia_r(cx = -0.7, cy = 0.27015, size = 400, max_iter = 255, gamma = 1)
 \item{size}{width and height of resulting square array. Default: 400}
 
 \item{max_iter}{maximum number of iterations. Default: 256}
-
-\item{gamma}{Gamma correction exponent. Default: 1}
 }
 \value{
 matrix of iteration count
 }
 \description{
-Calculate Julia set using base R matrix operations
+Users are encouraged to copy the body of this function and hack on it in 
+order to achieve novel renderings.
 }
 \examples{
+# Calculate number of iterations for each location with default parameters
 iters <- julia_r()
+
+# Specify the colour scheme
+cols <- terrain.colors(256) 
+
+# Convert the integer iteration count to the range [1, 256]
+# Do a little bit of gamma correction while we're at it
+z <- round( (iters / max(iters)) ^ 0.25 * 255) + 1
+
+# Convert from integer to colour
+z[] <- cols[z]
+plot(as.raster(z), interpolate = FALSE)
 }

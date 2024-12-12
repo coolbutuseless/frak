@@ -2,15 +2,29 @@
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #' Calculate Julia set using base R matrix operations
+#' 
+#' Users are encouraged to copy the body of this function and hack on it in 
+#' order to achieve novel renderings.
 #'
 #' @inheritParams julia
 #' @return matrix of iteration count
 #' @examples
+#' # Calculate number of iterations for each location with default parameters
 #' iters <- julia_r()
+#' 
+#' # Specify the colour scheme
+#' cols <- terrain.colors(256) 
+#' 
+#' # Convert the integer iteration count to the range [1, 256]
+#' # Do a little bit of gamma correction while we're at it
+#' z <- round( (iters / max(iters)) ^ 0.25 * 255) + 1
+#' 
+#' # Convert from integer to colour
+#' z[] <- cols[z]
+#' plot(as.raster(z), interpolate = FALSE)
 #' @export
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-julia_r <- function(cx = -0.7, cy = 0.27015, size = 400, max_iter = 255, 
-                    gamma = 1) {
+julia_r <- function(cx = -0.7, cy = 0.27015, size = 400, max_iter = 255) {
   
   N <- size
 
@@ -56,9 +70,6 @@ julia_r <- function(cx = -0.7, cy = 0.27015, size = 400, max_iter = 255,
 
 
 if (FALSE) {
-  print(Sys.time() - start)
-  cat("Complete at iteration: ", i, "\n")
-  table(valid)
   
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   # Simple plot

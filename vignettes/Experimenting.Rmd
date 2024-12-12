@@ -68,7 +68,7 @@ for (i in seq(max_iter)) {
 # Plot of number of iterations
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 oldpar <- graphics::par(mai = c(0, 0, 0, 0))
-cols <- viridisLite::viridis(256, begin = 0.1, end = 0.9)
+cols <- terrain.colors(256) 
 z <- round( (iter / max(iter)) ^ 0.25 * 255) + 1
 z[] <- cols[z]
 plot(as.raster(z), interpolate = FALSE)
@@ -141,7 +141,7 @@ for (i in seq(max_iter)) {
 # Plot of number of iterations
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 oldpar <- graphics::par(mai = c(0, 0, 0, 0))
-cols <- viridisLite::viridis(256, begin = 0.1, end = 0.9)
+cols <- terrain.colors(256) 
 z <- round( (iter / max(iter)) ^ 0.25 * 255) + 1
 z[] <- cols[z]
 plot(as.raster(z), interpolate = FALSE)
