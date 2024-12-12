@@ -37,7 +37,7 @@ NULL
 #' @export
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 julia <- function(cx = -0.7, cy = 0.27015, movex = 0, movey = 0, zoom = 1,
-                  size = 400, max_iter = 255, result = 'int', colors = NULL) {
+                  size = 400, max_iter = 255, result = 'raw', colors = NULL) {
   .Call(julia_, cx, cy, movex, movey, zoom, size, max_iter, result, colors)
 }
 

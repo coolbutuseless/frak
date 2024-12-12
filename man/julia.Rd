@@ -12,7 +12,7 @@ julia(
   zoom = 1,
   size = 400,
   max_iter = 255,
-  result = "int",
+  result = "raw",
   colors = NULL
 )
 }

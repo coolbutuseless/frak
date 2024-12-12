@@ -15,6 +15,8 @@
 SEXP julia_(SEXP cx_, SEXP cy_, SEXP movex_, SEXP movey_, SEXP zoom_, SEXP size_, 
             SEXP max_iter_, SEXP result_, SEXP colors_) {
 
+  int nprotect = 0;
+  
   int size     = Rf_asInteger(size_);
   double zoom  = Rf_asReal(zoom_);
   double cx    = Rf_asReal(cx_); // -0.7;
@@ -56,21 +58,44 @@ SEXP julia_(SEXP cx_, SEXP cy_, SEXP movex_, SEXP movey_, SEXP zoom_, SEXP size_
   }
 
   //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  // Normalise into range [0-255] and cast as byte
+  // Create return structure
   //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  SEXP rarray;
-  PROTECT(rarray = Rf_allocMatrix(RAWSXP, size, size));
-  uint8_t *raw_ptr = RAW(rarray);
-
-  iter_ptr = iters;
-
-  for (int i = 0; i < size * size; i++) {
-    *raw_ptr++ = (uint8_t)round(*iter_ptr++/(double)max * 255);
+  SEXP rarray = R_NilValue;
+  if (TYPEOF(result_) == STRSXP && Rf_length(result_) == 1) {
+    // 'int', 'dbl', 'raw'
+    const char *result = CHAR(STRING_ELT(result_, 0));
+    if (strcmp(result, "raw") == 0) {
+      PROTECT(rarray = Rf_allocMatrix(RAWSXP, size, size)); nprotect++;
+      uint8_t *raw_ptr = RAW(rarray);
+      
+      iter_ptr = iters;
+      
+      for (int i = 0; i < size * size; i++) {
+        *raw_ptr++ = (uint8_t)round(*iter_ptr++/(double)max * 255);
+      }
+    } else if (strcmp(result, "int") == 0) {
+      PROTECT(rarray = Rf_allocMatrix(INTSXP, size, size)); nprotect++;
+      memcpy(INTEGER(rarray), iters, size * size * sizeof(int));
+    } else if (strcmp(result, "dbl") == 0) {
+      PROTECT(rarray = Rf_allocMatrix(REALSXP, size, size)); nprotect++;
+      double *ptr = REAL(rarray);
+      
+      iter_ptr = iters;
+      
+      for (int i = 0; i < size * size; i++) {
+        *ptr++ = (double)(*iter_ptr++/(double)max);
+      }
+    } else {
+      Rf_error("'result' string type not yet handled: %s", result);
+    }
+  } else {
+    Rf_error("'result' not handled");
   }
 
 
+
   free(iters);
-  UNPROTECT(1);
+  UNPROTECT(nprotect);
   return rarray;
 }
 
