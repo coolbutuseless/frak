@@ -17,15 +17,15 @@ julia(
 )
 }
 \arguments{
-\item{cx, cy}{real and imaginary components of 'c'}
+\item{cx, cy}{real and imaginary components of 'c'. Default [-0.7, 0.27015]}
 
-\item{movex, movey}{offsets in centre position}
+\item{movex, movey}{offsets in centre position Default [0, 0]}
 
 \item{zoom}{zoom level. default 1.}
 
-\item{size}{width and height of resulting array}
+\item{size}{width and height of resulting square array. Default: 400}
 
-\item{max_iter}{maximum number of iterations}
+\item{max_iter}{maximum number of iterations. Default: 256}
 
 \item{gamma}{Gamma correction exponent. Default: 1}
 

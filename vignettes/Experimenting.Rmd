@@ -1,0 +1,149 @@
+---
+title: "Experimenting"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Experimenting}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+While there is only one "Julia Set" equation, it is possible to tweak/change
+the calculation to generate different outputs.
+
+## Standard Julia Set Output
+
+```{r}
+cx <- -0.7
+cy <- 0.27015
+size <- 400
+max_iter <- 255
+gamma <- 1
+
+N <- size
+
+# Define the (x, y) grid of coordiantes
+x <- matrix(seq(-2, 2, length.out = N), N, N, byrow = TRUE)
+y <- matrix(seq(-2, 2, length.out = N), N, N, byrow = FALSE)
+
+# Where is the iteration still valid (i.e. hasn't diverged to infinity)
+valid <- rep(T, N * N)
+idx   <- which(valid)
+
+# A matrix to hold the iteration count
+iter  <- matrix(0L, N, N)
+
+for (i in seq(max_iter)) {
+  # Just calculate on the (x,y) which are still valid
+  xt <- x[idx]
+  yt <- y[idx]
+  
+  # where is the (squared) magnitude still < 4    
+  valid[idx] <- (xt*xt + yt*yt) < 4
+  
+  # terminate early if all values have escaped
+  idx <- which(valid)
+  if (length(idx) == 0) break;
+  
+  # Bump the iteraton count
+  iter[idx] <- iter[idx] + 1L
+  
+  # Update which x,y we'll be calculating on (using latest idx)
+  xt <- x[idx]
+  yt <- y[idx]
+  
+  # Iterative calculation
+  tmp    <- xt * xt - yt * yt + cx 
+  y[idx] <- 2 * xt * yt + cy       
+  x[idx] <- tmp
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Plot of number of iterations
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+oldpar <- graphics::par(mai = c(0, 0, 0, 0))
+cols <- terrain.colors(256) 
+z <- round( (iter / max(iter)) ^ 0.25 * 255) + 1
+z[] <- cols[z]
+plot(as.raster(z), interpolate = FALSE)
+par(oldpar)
+```
+
+## Output magnitude at each location
+
+```{r}
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Plot of final magnitude at each location
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+oldpar <- graphics::par(mai = c(0, 0, 0, 0))
+z <- sqrt(x * x + y * y)
+z <- round((z / max(z)) ^ 2 * 255) + 1
+z[] <- cols[z]
+plot(as.raster(z), interpolate = FALSE)
+par(oldpar)
+```
+
+
+## Tweak the iterative calculation
+
+```{r}
+cx <- -0.7
+cy <- 0.27015
+size <- 400
+max_iter <- 255
+gamma <- 1
+
+N <- size
+
+# Define the (x, y) grid of coordiantes
+x <- matrix(seq(-2, 2, length.out = N), N, N, byrow = TRUE)
+y <- matrix(seq(-2, 2, length.out = N), N, N, byrow = FALSE)
+
+# Where is the iteration still valid (i.e. hasn't diverged to infinity)
+valid <- rep(T, N * N)
+idx   <- which(valid)
+
+# A matrix to hold the iteration count
+iter  <- matrix(0L, N, N)
+
+for (i in seq(max_iter)) {
+  # Just calculate on the (x,y) which are still valid
+  xt <- x[idx]
+  yt <- y[idx]
+  
+  # where is the (squared) magnitude still < 4    
+  valid[idx] <- (xt*xt + yt*yt) < 4
+  
+  # terminate early if all values have escaped
+  idx <- which(valid)
+  if (length(idx) == 0) break;
+  
+  # Bump the iteraton count
+  iter[idx] <- iter[idx] + 1L
+  
+  # Update which x,y we'll be calculating on (using latest idx)
+  xt <- x[idx]
+  yt <- y[idx]
+  
+  # Iterative calculation
+  tmp    <- abs(xt) - abs(yt) + cx^2 # <<------------ Changed this !!
+  y[idx] <- 2 * xt * yt + cy       
+  x[idx] <- tmp
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Plot of number of iterations
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+oldpar <- graphics::par(mai = c(0, 0, 0, 0))
+cols <- terrain.colors(256) 
+z <- round( (iter / max(iter)) ^ 0.25 * 255) + 1
+z[] <- cols[z]
+plot(as.raster(z), interpolate = FALSE)
+par(oldpar)
+```

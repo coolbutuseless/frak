@@ -1,7 +1,9 @@
 
-# frac 0.1.1.9000  2024-12-12
+# frac 0.1.1.9001  2024-12-12
 
-* Modernise
+* [9002] Simple Vignette for exploring / hacking.
+* [9001] Add base R julia calculation
+* [9000] Modernise
 
 # frac 0.1.1  2020-07-19
 
