@@ -12,8 +12,8 @@ julia(
   zoom = 1,
   size = 400,
   max_iter = 255,
-  gamma = 1,
-  equalize = FALSE
+  result = "int",
+  colors = NULL
 )
 }
 \arguments{
@@ -27,9 +27,14 @@ julia(
 
 \item{max_iter}{maximum number of iterations. Default: 256}
 
-\item{gamma}{Gamma correction exponent. Default: 1}
+\item{result}{'int', 'dbl', 'nativeraster', 'raster' OR an array of the
+right type which will be filled with the result.  If an array 
+is provided its dimensions will override the \code{size}
+argument.}
 
-\item{equalize}{Equalize histogram to enhance the contrast. default: FALSE}
+\item{colors}{if type is 'raster' or 'nativeraster', then this is the
+colour palette to use. If not provided, a default
+palette will be used.}
 }
 \value{
 raw vector with dimensions (size, size)

@@ -19,8 +19,13 @@ NULL
 #' @param zoom zoom level. default 1.
 #' @param movex,movey offsets in centre position Default [0, 0]
 #' @param max_iter maximum number of iterations. Default: 256
-#' @param gamma Gamma correction exponent. Default: 1
-#' @param equalize Equalize histogram to enhance the contrast. default: FALSE
+#' @param result 'int', 'dbl', 'nativeraster', 'raster' OR an array of the
+#'        right type which will be filled with the result.  If an array 
+#'        is provided its dimensions will override the \code{size}
+#'        argument.
+#' @param colors if type is 'raster' or 'nativeraster', then this is the
+#'        colour palette to use. If not provided, a default
+#'        palette will be used.
 #'
 #' @return raw vector with dimensions (size, size)
 #' @examples
@@ -32,10 +37,7 @@ NULL
 #' @export
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 julia <- function(cx = -0.7, cy = 0.27015, movex = 0, movey = 0, zoom = 1,
-                  size = 400, max_iter = 255, gamma = 1, equalize = FALSE) {
-  res <- .Call(julia_, cx, cy, movex, movey, zoom, size, max_iter, gamma, equalize)
-
-  dim(res) <- c(size, size)
-  res
+                  size = 400, max_iter = 255, result = 'int', colors = NULL) {
+  .Call(julia_, cx, cy, movex, movey, zoom, size, max_iter, result, colors)
 }
 

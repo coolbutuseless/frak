@@ -13,7 +13,7 @@
 // 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 SEXP julia_(SEXP cx_, SEXP cy_, SEXP movex_, SEXP movey_, SEXP zoom_, SEXP size_, 
-            SEXP max_iter_, SEXP gamma_, SEXP equalize_) {
+            SEXP max_iter_, SEXP result_, SEXP colors_) {
 
   int size     = Rf_asInteger(size_);
   double zoom  = Rf_asReal(zoom_);
@@ -59,7 +59,7 @@ SEXP julia_(SEXP cx_, SEXP cy_, SEXP movex_, SEXP movey_, SEXP zoom_, SEXP size_
   // Normalise into range [0-255] and cast as byte
   //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   SEXP rarray;
-  PROTECT(rarray = Rf_allocVector(RAWSXP, size * size));
+  PROTECT(rarray = Rf_allocMatrix(RAWSXP, size, size));
   uint8_t *raw_ptr = RAW(rarray);
 
   iter_ptr = iters;
@@ -68,59 +68,64 @@ SEXP julia_(SEXP cx_, SEXP cy_, SEXP movex_, SEXP movey_, SEXP zoom_, SEXP size_
     *raw_ptr++ = (uint8_t)round(*iter_ptr++/(double)max * 255);
   }
 
-  //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  // Histogram equalization
-  //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  int equalize = Rf_asLogical(equalize_);
-  if (equalize) {
-    uint32_t *hist;
-    hist = (uint32_t *)calloc(256, sizeof(uint32_t));
-    double cumsum[256];
-    raw_ptr = RAW(rarray);
-
-    // Count the pixels at each level
-    for (int i = 0; i < size * size; i++) {
-      hist[raw_ptr[i]]++;
-    }
-
-    // Calculate the cumulative sum of pixels
-    cumsum[0] = hist[0];
-    for (int i = 1; i < 256; i++) {
-      cumsum[i] = cumsum[i-1] + hist[i];
-    }
-
-    // Rescale the cumulative sum by the total pixels and scale by the
-    // max level i.e. 255
-    uint8_t remap[256];
-    for (int i = 0; i < 256; i++) {
-      remap[i] = (uint8_t)floor(cumsum[i] / (size * size) * 255);
-    }
-
-    // Remap pixel values to the equalized bins in 'remap'
-    raw_ptr = RAW(rarray);
-    for (int i = 0; i < size * size; i++) {
-      *raw_ptr = remap[*raw_ptr];
-      raw_ptr++;
-    }
-    free(hist);
-  }
-
-
-  //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  // Apply gamma correction
-  //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  double gamma = Rf_asReal(gamma_);
-  if (gamma != 1) {
-    raw_ptr = RAW(rarray);
-    for (int i = 0; i < size * size; i++) {
-      *raw_ptr = (uint8_t)round(pow(*raw_ptr/255.0, gamma) * 255);
-      raw_ptr++;
-    }
-  }
-
 
   free(iters);
-
   UNPROTECT(1);
   return rarray;
 }
+
+
+
+
+// //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// // Histogram equalization
+// //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// int equalize = Rf_asLogical(equalize_);
+// if (equalize) {
+//   uint32_t *hist;
+//   hist = (uint32_t *)calloc(256, sizeof(uint32_t));
+//   double cumsum[256];
+//   raw_ptr = RAW(rarray);
+//   
+//   // Count the pixels at each level
+//   for (int i = 0; i < size * size; i++) {
+//     hist[raw_ptr[i]]++;
+//   }
+//   
+//   // Calculate the cumulative sum of pixels
+//   cumsum[0] = hist[0];
+//   for (int i = 1; i < 256; i++) {
+//     cumsum[i] = cumsum[i-1] + hist[i];
+//   }
+//   
+//   // Rescale the cumulative sum by the total pixels and scale by the
+//   // max level i.e. 255
+//   uint8_t remap[256];
+//   for (int i = 0; i < 256; i++) {
+//     remap[i] = (uint8_t)floor(cumsum[i] / (size * size) * 255);
+//   }
+//   
+//   // Remap pixel values to the equalized bins in 'remap'
+//   raw_ptr = RAW(rarray);
+//   for (int i = 0; i < size * size; i++) {
+//     *raw_ptr = remap[*raw_ptr];
+//     raw_ptr++;
+//   }
+//   free(hist);
+// }
+// 
+// 
+// //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// // Apply gamma correction
+// //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// double gamma = Rf_asReal(gamma_);
+// if (gamma != 1) {
+//   raw_ptr = RAW(rarray);
+//   for (int i = 0; i < size * size; i++) {
+//     *raw_ptr = (uint8_t)round(pow(*raw_ptr/255.0, gamma) * 255);
+//     raw_ptr++;
+//   }
+// }
+
+
+
