@@ -47,9 +47,7 @@ but rather the count of iterations scaled to be a maximum of 255 - and thus
 the data fits in a \code{raw} vector.
 }
 \examples{
-\dontrun{
 js <- julia()
 mode(js) <- 'integer'
 plot(as.raster(js/255))
-}
 }

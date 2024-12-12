@@ -29,11 +29,9 @@ NULL
 #'
 #' @return raw vector with dimensions (size, size)
 #' @examples
-#' \dontrun{
 #' js <- julia()
 #' mode(js) <- 'integer'
 #' plot(as.raster(js/255))
-#' }
 #' @export
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 julia <- function(cx = -0.7, cy = 0.27015, movex = 0, movey = 0, zoom = 1,

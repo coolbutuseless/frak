@@ -27,33 +27,33 @@ SEXP julia_(SEXP cx_, SEXP cy_, SEXP movex_, SEXP movey_, SEXP zoom_, SEXP size_
 
   double idenom = 1.5/(0.5 * zoom * size);
 
-  int max = 1;
+  int max_iter_count = 1;
 
-  int *iters = calloc((size_t)(size * size), sizeof(int));
-  if (iters == NULL) {
+  int *iter_count = calloc((size_t)(size * size), sizeof(int));
+  if (iter_count == NULL) {
     Rf_error("julia_(): Could not allocate memory for 'iters'");
   }
-  int *iter_ptr = iters;
+  int *iter_ptr = iter_count;
 
   for (int x=0; x < size; x++) {
     for (int y = 0; y < size; y++) {
       double zx = (x - size/2) * idenom + movex;
       double zy = (y - size/2) * idenom + movey;
 
-      int iter = 0;
-      while( (zx * zx + zy * zy < 4) & (iter < max_iter)) {
+      int niter = 0;
+      while( (zx * zx + zy * zy < 4) & (niter < max_iter)) {
         double tmp = zx * zx - zy * zy + cx;
         zy = 2 * zx * zy + cy;
         zx = tmp;
-        iter++;
+        niter++;
       }
 
       // Keep track of the actual maximum iteration seen during frame
-      if (iter > max) {
-        max = iter;
+      if (niter > max_iter_count) {
+        max_iter_count = niter;
       }
 
-      *iter_ptr++ = iter;
+      *iter_ptr++ = niter;
     }
   }
 
@@ -68,22 +68,22 @@ SEXP julia_(SEXP cx_, SEXP cy_, SEXP movex_, SEXP movey_, SEXP zoom_, SEXP size_
       PROTECT(rarray = Rf_allocMatrix(RAWSXP, size, size)); nprotect++;
       uint8_t *raw_ptr = RAW(rarray);
       
-      iter_ptr = iters;
+      iter_ptr = iter_count;
       
       for (int i = 0; i < size * size; i++) {
-        *raw_ptr++ = (uint8_t)round(*iter_ptr++/(double)max * 255);
+        *raw_ptr++ = (uint8_t)round(*iter_ptr++/(double)max_iter_count * 255);
       }
     } else if (strcmp(result, "int") == 0) {
       PROTECT(rarray = Rf_allocMatrix(INTSXP, size, size)); nprotect++;
-      memcpy(INTEGER(rarray), iters, size * size * sizeof(int));
+      memcpy(INTEGER(rarray), iter_count, size * size * sizeof(int));
     } else if (strcmp(result, "dbl") == 0) {
       PROTECT(rarray = Rf_allocMatrix(REALSXP, size, size)); nprotect++;
       double *ptr = REAL(rarray);
       
-      iter_ptr = iters;
+      iter_ptr = iter_count;
       
       for (int i = 0; i < size * size; i++) {
-        *ptr++ = (double)(*iter_ptr++/(double)max);
+        *ptr++ = (double)(*iter_ptr++/(double)max_iter_count);
       }
     } else {
       Rf_error("'result' string type not yet handled: %s", result);
@@ -94,7 +94,7 @@ SEXP julia_(SEXP cx_, SEXP cy_, SEXP movex_, SEXP movey_, SEXP zoom_, SEXP size_
 
 
 
-  free(iters);
+  free(iter_count);
   UNPROTECT(nprotect);
   return rarray;
 }
