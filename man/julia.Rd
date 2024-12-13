@@ -48,6 +48,6 @@ but rather the count of iterations scaled to be a maximum of 255 - and thus
 the data fits in a \code{raw} vector.
 }
 \examples{
-im <- julia(result = 'int')
+im <- julia(result = 'int', height = 200, zoom = 4, x = 0.2)
 plot(as.raster(im/max(im)))
 }

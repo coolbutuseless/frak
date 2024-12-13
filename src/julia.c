@@ -81,16 +81,16 @@ SEXP julia_(SEXP c_re_, SEXP c_im_,
 
   int max_iter_count = 1;
 
-  int *iter_count = calloc((size_t)(size * size), sizeof(int));
+  int *iter_count = calloc((size_t)(width * height), sizeof(int));
   if (iter_count == NULL) {
     Rf_error("julia_(): Could not allocate memory for 'iters'");
   }
   int *iter_ptr = iter_count;
 
-  for (int col = 0; col < size; ++col) {
-    for (int row = 0; row < size; ++row) {
-      double re = (col - size/2) * idenom + x;
-      double im = (row - size/2) * idenom + y;
+  for (int col = 0; col < width; ++col) {
+    for (int row = 0; row < height; ++row) {
+      double re = (col -  width/2) * idenom + x;
+      double im = (row - height/2) * idenom + y;
 
       int niter = 0;
       while( (re * re + im * im < 4) & (niter < max_iter)) {
@@ -117,31 +117,31 @@ SEXP julia_(SEXP c_re_, SEXP c_im_,
     // 'int', 'dbl', 'raw'
     const char *result = CHAR(STRING_ELT(result_, 0));
     if (strcmp(result, "raw") == 0) {
-      PROTECT(rarray = Rf_allocMatrix(RAWSXP, size, size)); nprotect++;
+      PROTECT(rarray = Rf_allocMatrix(RAWSXP, height, width)); nprotect++;
       uint8_t *raw_ptr = RAW(rarray);
       
       iter_ptr = iter_count;
       
-      for (int i = 0; i < size * size; i++) {
+      for (int i = 0; i < height * width; i++) {
         *raw_ptr++ = (uint8_t)round(*iter_ptr++/(double)max_iter_count * 255);
       }
     } else if (strcmp(result, "int") == 0) {
-      PROTECT(rarray = Rf_allocMatrix(INTSXP, size, size)); nprotect++;
-      memcpy(INTEGER(rarray), iter_count, size * size * sizeof(int));
+      PROTECT(rarray = Rf_allocMatrix(INTSXP, height, width)); nprotect++;
+      memcpy(INTEGER(rarray), iter_count, height * width * sizeof(int));
     } else if (strcmp(result, "dbl") == 0) {
-      PROTECT(rarray = Rf_allocMatrix(REALSXP, size, size)); nprotect++;
+      PROTECT(rarray = Rf_allocMatrix(REALSXP, height, width)); nprotect++;
       double *ptr = REAL(rarray);
       
       iter_ptr = iter_count;
       
-      for (int i = 0; i < size * size; i++) {
+      for (int i = 0; i < height * width; i++) {
         *ptr++ = (double)(*iter_ptr++/(double)max_iter_count);
       }
     } else if (strcmp(result, "nativeraster") == 0 || strcmp(result, "nara") == 0) {
-      PROTECT(rarray = Rf_allocMatrix(INTSXP, size, size)); nprotect++;
+      PROTECT(rarray = Rf_allocMatrix(INTSXP, height, width)); nprotect++;
       int *ptr = INTEGER(rarray);
       iter_ptr = iter_count;
-      for (int i = 0; i < size * size; i++) {
+      for (int i = 0; i < height * width; i++) {
         int idx = round(*iter_ptr++/(double)max_iter_count * 255);
         *ptr++ = default_packed_cols[idx];
       }

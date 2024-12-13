@@ -29,7 +29,7 @@ NULL
 #'
 #' @return raw vector with dimensions (size, size)
 #' @examples
-#' im <- julia(result = 'int')
+#' im <- julia(result = 'int', height = 200, zoom = 4, x = 0.2)
 #' plot(as.raster(im/max(im)))
 #' @export
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -37,12 +37,6 @@ julia <- function(c_re = -0.7, c_im = 0.27015,
                   x = 0, y = 0, zoom = 1,
                   width = 400, height = 400, 
                   max_iter = 255, result = 'int', colors = NULL) {
-  
-  # SEXP c_re_, SEXP c_im_, 
-  # SEXP x_, SEXP y_, SEXP zoom_,
-  # SEXP width_, SEXP height_, 
-  # SEXP max_iter_, 
-  # SEXP result_, SEXP colors_
   
   .Call(
     julia_, 
