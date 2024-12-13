@@ -1,6 +1,8 @@
 
-# frac 0.1.1.9001  2024-12-12
+# frac 0.1.1.9003  2024-12-12
 
+* [9003] julia() now returns int by default. Also allows 'dbl' and 'nara'
+* [9003] Update "julia_r()" to take args: x,y,zoom,width,height
 * [9002] Simple Vignette for exploring / hacking.
 * [9001] Add base R julia calculation
 * [9000] Modernise

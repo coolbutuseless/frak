@@ -1,13 +1,13 @@
 Package: frak
 Type: Package
 Title: Julia Set Fractal Generator
-Version: 0.1.1.9001
+Version: 0.1.1.9003
 Authors@R: c(
     person("Mike", "Cheng", role = c("aut", "cre", 'cph'), email = "mikefc@coolbutuseless.com")
     )
 Maintainer: Mike Cheng <mikefc@coolbutuseless.com>
 URL: https://github.com/coolbutuseless/insitu
-Description: Generate julia set fractals.
+Description: Generate julia set fractals in C and in R.
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true

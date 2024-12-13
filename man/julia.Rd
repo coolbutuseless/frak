@@ -2,49 +2,48 @@
 % Please edit documentation in R/julia.R
 \name{julia}
 \alias{julia}
-\title{Generate a julia set}
+\title{Generate a Julia Set}
 \usage{
 julia(
-  cx = -0.7,
-  cy = 0.27015,
-  movex = 0,
-  movey = 0,
+  c_re = -0.7,
+  c_im = 0.27015,
+  x = 0,
+  y = 0,
   zoom = 1,
-  size = 400,
+  width = 400,
+  height = 400,
   max_iter = 255,
-  gamma = 1,
-  equalize = FALSE
+  result = "int"
 )
 }
 \arguments{
-\item{cx, cy}{real and imaginary components of 'c'. Default [-0.7, 0.27015]}
+\item{c_re, c_im}{real and imaginary components of 'c'. Default [-0.7, 0.27015]}
 
-\item{movex, movey}{offsets in centre position Default [0, 0]}
+\item{x, y}{offsets in centre position Default [0, 0]}
 
 \item{zoom}{zoom level. default 1.}
 
-\item{size}{width and height of resulting square array. Default: 400}
+\item{width, height}{size of the output image default: 400x400}
 
-\item{max_iter}{maximum number of iterations. Default: 256}
+\item{max_iter}{maximum number of iterations. Default: 255}
 
-\item{gamma}{Gamma correction exponent. Default: 1}
-
-\item{equalize}{Equalize histogram to enhance the contrast. default: FALSE}
+\item{result}{'int', 'dbl', 'nativeraster' (or 'nara').
+\describe{
+  \item{\code{'int'}}{The integer matrix returned is a record of the raw counts}
+  \item{\code{'dbl'}}{The iteraction counts are normalised to be in the range [0, 1]}
+  \item{\code{'nativeraster'}}{The matrix is returned as a native raster with the 
+  colors specified in the \code{colors} argument (not yet implemented)}
+}}
 }
 \value{
 raw vector with dimensions (size, size)
 }
 \description{
-This function generates Julia fractals as an array of raw values.  The
-values represent the number of iterations performed before the values at
-the pixel location iterated towards infinity.  It is not a raw count of iterations,
-but rather the count of iterations scaled to be a maximum of 255 - and thus
-the data fits in a \code{raw} vector.
+This function generates a fractal image - the value at each location 
+represents the number of iterations performed before the function
+evaluation tends towards infinity.
 }
 \examples{
-\dontrun{
-js <- julia()
-mode(js) <- 'integer'
-plot(as.raster(js/255))
-}
+im <- julia(result = 'int', height = 200, zoom = 4, x = 0.2)
+plot(as.raster(im/max(im)))
 }

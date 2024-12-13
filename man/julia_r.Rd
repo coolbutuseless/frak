@@ -4,14 +4,27 @@
 \alias{julia_r}
 \title{Calculate Julia set using base R matrix operations}
 \usage{
-julia_r(cx = -0.7, cy = 0.27015, size = 400, max_iter = 255)
+julia_r(
+  c_re = -0.7,
+  c_im = 0.27015,
+  x = 0,
+  y = 0,
+  zoom = 1,
+  width = 400,
+  height = 200,
+  max_iter = 255
+)
 }
 \arguments{
-\item{cx, cy}{real and imaginary components of 'c'. Default [-0.7, 0.27015]}
+\item{c_re, c_im}{real and imaginary components of 'c'. Default [-0.7, 0.27015]}
 
-\item{size}{width and height of resulting square array. Default: 400}
+\item{x, y}{offsets in centre position Default [0, 0]}
 
-\item{max_iter}{maximum number of iterations. Default: 256}
+\item{zoom}{zoom level. default 1.}
+
+\item{width, height}{size of the output image default: 400x400}
+
+\item{max_iter}{maximum number of iterations. Default: 255}
 }
 \value{
 matrix of iteration count
