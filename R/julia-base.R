@@ -24,11 +24,27 @@
 #' plot(as.raster(z), interpolate = FALSE)
 #' @export
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-julia_r <- function(c_re = -0.7, c_im = 0.27015, width = 400, height = 200, max_iter = 255) {
+julia_r <- function(c_re = -0.7, c_im = 0.27015, 
+                    x = 0, y = 0, zoom = 1,
+                    width = 400, height = 200, 
+                    max_iter = 255) {
+
+  # Adjust extents
+  dx <- 2
+  dy <- 2
+  if (width > height) {
+    dy <- dy * height / width
+  } else {
+    dx <- dx * width / height
+  }
+  
+  # zoom
+  dx <- dx / zoom
+  dy <- dy / zoom
 
   # Define the (x, y) grid of coordiantes
-  x <- matrix(seq(-2, 2, length.out =  width), height, width, byrow = TRUE)
-  y <- matrix(seq(-2, 2, length.out = height), height, width, byrow = FALSE)
+  x <- matrix(seq(-dx + x, dx + x, length.out =  width), height, width, byrow = TRUE)
+  y <- matrix(seq(-dy + y, dy + y, length.out = height), height, width, byrow = FALSE)
   
   # Where is the iteration still valid (i.e. hasn't diverged to infinity)
   valid <- rep(T, height * width)
@@ -72,7 +88,7 @@ if (FALSE) {
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   # Simple plot
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  iter <- julia_r()
+  iter <- julia_r(zoom = 2, x = 0.5)
   
   cols <- viridisLite::viridis(256, begin = 0.1, end = 0.9)
   cols <- terrain.colors(256) 
@@ -80,6 +96,12 @@ if (FALSE) {
   z <- round( (iter / max(iter)) ^ 0.25 * 255) + 1
   z[] <- cols[z]
   plot(as.raster(z), interpolate = FALSE)
+  
+  
+  grid::grid.newpage()
+  julia(zoom = 2, x = 0.5, result = 'nara', height = 200) |> grid::grid.raster()
+  
+  
 }
 
 

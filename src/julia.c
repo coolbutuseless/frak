@@ -58,6 +58,9 @@ int default_packed_cols[256] = {
 #define MAX(a,b) (((a)>(b))?(a):(b))
 
 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// Regular matrix calculation of julia set fractal
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 void julia_core(double c_re, double c_im,
                 double x, double y, double zoom,
                 int width, int height, 
@@ -93,7 +96,9 @@ void julia_core(double c_re, double c_im,
 }
 
 
-
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// Transposed calculation for nativeRasters
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 void julia_core_tranposed(double c_re, double c_im,
                           double x, double y, double zoom,
                           int width, int height, 
