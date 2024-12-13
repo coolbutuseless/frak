@@ -6,6 +6,7 @@
 
 #include <stdio.h>
 #include <stdint.h>
+#include <stdbool.h>
 #include <stdlib.h>
 #include <unistd.h>
 
@@ -56,6 +57,78 @@ int default_packed_cols[256] = {
 #define MIN(a,b) (((a)<(b))?(a):(b))
 #define MAX(a,b) (((a)>(b))?(a):(b))
 
+
+void julia_core(double c_re, double c_im,
+                double x, double y, double zoom,
+                int width, int height, 
+                int max_iter, int *iter_count, int *actual_max_iter) {
+  
+  int size = MAX(width, height);
+  double idenom = 2/(0.5 * zoom * size);
+  
+  *actual_max_iter = 1;
+  int *iter_ptr = iter_count;
+  
+  for (int col = 0; col < width; ++col) {
+    for (int row = 0; row < height; ++row) {
+      double re = (col -  width/2) * idenom + x;
+      double im = (row - height/2) * idenom + y;
+      
+      int niter = 0;
+      while( (re * re + im * im < 4) & (niter < max_iter)) {
+        double tmp = re * re - im * im + c_re;
+        im = 2 * re * im + c_im;
+        re = tmp;
+        niter++;
+      }
+      
+      // Keep track of the actual maximum iteration seen during frame
+      if (niter > *actual_max_iter) {
+        *actual_max_iter = niter;
+      }
+      
+      *iter_ptr++ = niter;
+    }
+  }
+}
+
+
+
+void julia_core_tranposed(double c_re, double c_im,
+                double x, double y, double zoom,
+                int width, int height, 
+                int max_iter, int *iter_count, int *actual_max_iter) {
+  
+  int size = MAX(width, height);
+  double idenom = 2/(0.5 * zoom * size);
+  
+  *actual_max_iter = 1;
+  int *iter_ptr = iter_count;
+  
+  for (int row = 0; row < height; ++row) {
+    for (int col = 0; col < width; ++col) {
+      double re = (col -  width/2) * idenom + x;
+      double im = (row - height/2) * idenom + y;
+      
+      int niter = 0;
+      while( (re * re + im * im < 4) & (niter < max_iter)) {
+        double tmp = re * re - im * im + c_re;
+        im = 2 * re * im + c_im;
+        re = tmp;
+        niter++;
+      }
+      
+      // Keep track of the actual maximum iteration seen during frame
+      if (niter > *actual_max_iter) {
+        *actual_max_iter = niter;
+      }
+      
+      *iter_ptr++ = niter;
+    }
+  }
+}
+
+
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -67,52 +140,62 @@ SEXP julia_(SEXP c_re_, SEXP c_im_,
 
   int nprotect = 0;
   
+  //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  // Unpack user arguments
+  //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   int width      = Rf_asInteger(width_);
   int height     = Rf_asInteger(height_);
-  int size       = MAX(width, height);
   double zoom    = Rf_asReal(zoom_);
-  double c_re    = Rf_asReal(c_re_); // -0.7;
-  double c_im    = Rf_asReal(c_im_); // 0.27015;
+  double c_re    = Rf_asReal(c_re_); 
+  double c_im    = Rf_asReal(c_im_); 
   double x       = Rf_asReal(x_);
   double y       = Rf_asReal(y_);
   int max_iter   = Rf_asInteger(max_iter_);
+  
+  //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  // If working with native rasters, then 'transpose = true', for all other
+  // types, array = FALSE
+  //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  bool transposed = false;
+  if (TYPEOF(result_) == STRSXP && 
+      Rf_length(result_) == 1) {
+    const char *result = CHAR(STRING_ELT(result_, 0));
+    if (strcmp(result, "nativeraster") == 0 || strcmp(result, "nara") == 0) {
+      transposed = true;
+    } 
+  }
 
-  double idenom = 2/(0.5 * zoom * size);
-
-  int max_iter_count = 1;
-
+  //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  // Prepare storage space for result
+  //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  int actual_max_iter = 1; // avoid a corner case where num iters = 0
   int *iter_count = calloc((size_t)(width * height), sizeof(int));
   if (iter_count == NULL) {
     Rf_error("julia_(): Could not allocate memory for 'iters'");
   }
-  int *iter_ptr = iter_count;
-
-  for (int col = 0; col < width; ++col) {
-    for (int row = 0; row < height; ++row) {
-      double re = (col -  width/2) * idenom + x;
-      double im = (row - height/2) * idenom + y;
-
-      int niter = 0;
-      while( (re * re + im * im < 4) & (niter < max_iter)) {
-        double tmp = re * re - im * im + c_re;
-        im = 2 * re * im + c_im;
-        re = tmp;
-        niter++;
-      }
-
-      // Keep track of the actual maximum iteration seen during frame
-      if (niter > max_iter_count) {
-        max_iter_count = niter;
-      }
-
-      *iter_ptr++ = niter;
-    }
+  
+  //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  // Call the core julia routine.
+  //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  if (transposed) {
+    julia_core_tranposed(c_re, c_im,
+                         x, y, zoom,
+                         width, height, 
+                         max_iter, 
+                         iter_count, &actual_max_iter);
+  } else {
+    julia_core(c_re, c_im,
+               x, y, zoom,
+               width, height, 
+               max_iter, 
+               iter_count, &actual_max_iter);
   }
-
+  
   //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   // Create return structure
   //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   SEXP rarray = R_NilValue;
+  int *iter_ptr = NULL;
   if (TYPEOF(result_) == STRSXP && Rf_length(result_) == 1) {
     // 'int', 'dbl', 'raw'
     const char *result = CHAR(STRING_ELT(result_, 0));
@@ -123,7 +206,7 @@ SEXP julia_(SEXP c_re_, SEXP c_im_,
       iter_ptr = iter_count;
       
       for (int i = 0; i < height * width; i++) {
-        *raw_ptr++ = (uint8_t)round(*iter_ptr++/(double)max_iter_count * 255);
+        *raw_ptr++ = (uint8_t)round(*iter_ptr++/(double)actual_max_iter * 255);
       }
     } else if (strcmp(result, "int") == 0) {
       PROTECT(rarray = Rf_allocMatrix(INTSXP, height, width)); nprotect++;
@@ -135,14 +218,14 @@ SEXP julia_(SEXP c_re_, SEXP c_im_,
       iter_ptr = iter_count;
       
       for (int i = 0; i < height * width; i++) {
-        *ptr++ = (double)(*iter_ptr++/(double)max_iter_count);
+        *ptr++ = (double)(*iter_ptr++/(double)actual_max_iter);
       }
     } else if (strcmp(result, "nativeraster") == 0 || strcmp(result, "nara") == 0) {
-      PROTECT(rarray = Rf_allocMatrix(INTSXP, width, height)); nprotect++;
+      PROTECT(rarray = Rf_allocMatrix(INTSXP, height, width)); nprotect++;
       int *ptr = INTEGER(rarray);
       iter_ptr = iter_count;
       for (int i = 0; i < height * width; i++) {
-        int idx = round(*iter_ptr++/(double)max_iter_count * 255);
+        int idx = round(*iter_ptr++/(double)actual_max_iter * 255);
         *ptr++ = default_packed_cols[idx];
       }
       Rf_setAttrib(rarray, R_ClassSymbol, Rf_mkString("nativeRaster"));
