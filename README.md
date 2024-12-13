@@ -6,6 +6,7 @@
 <!-- badges: start -->
 
 ![](https://img.shields.io/badge/cool-useless-green.svg)
+![](https://img.shields.io/badge/API-unstable-orange.svg)
 [![R-CMD-check](https://github.com/coolbutuseless/frak/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/coolbutuseless/frak/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
@@ -165,9 +166,9 @@ res <- bench::mark(
 
 | expression          |      min |   median |    itr/sec |
 |:--------------------|---------:|---------:|-----------:|
-| Julia::JuliaImage() | 310.48ms | 311.48ms |   3.210453 |
-| frak::julia()       |   2.28ms |   2.51ms | 390.460931 |
-| frack::julia_r()    |  43.23ms |  47.67ms |  19.972469 |
+| Julia::JuliaImage() | 288.88ms | 290.35ms |   3.444074 |
+| frak::julia()       |   2.26ms |   2.35ms | 420.138483 |
+| frack::julia_r()    |  45.08ms |  48.06ms |  19.690096 |
 
 <img src="man/figures/README-unnamed-chunk-6-1.png" width="100%" />
 

@@ -95,9 +95,9 @@ void julia_core(double c_re, double c_im,
 
 
 void julia_core_tranposed(double c_re, double c_im,
-                double x, double y, double zoom,
-                int width, int height, 
-                int max_iter, int *iter_count, int *actual_max_iter) {
+                          double x, double y, double zoom,
+                          int width, int height, 
+                          int max_iter, int *iter_count, int *actual_max_iter) {
   
   int size = MAX(width, height);
   double idenom = 2/(0.5 * zoom * size);
@@ -128,6 +128,9 @@ void julia_core_tranposed(double c_re, double c_im,
   }
 }
 
+#define TYPE_INT  0
+#define TYPE_NARA 1
+#define TYPE_DBL  2
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // 
@@ -137,7 +140,7 @@ SEXP julia_(SEXP c_re_, SEXP c_im_,
             SEXP width_, SEXP height_, 
             SEXP max_iter_, 
             SEXP result_, SEXP colors_) {
-
+  
   int nprotect = 0;
   
   //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -156,27 +159,45 @@ SEXP julia_(SEXP c_re_, SEXP c_im_,
   // If working with native rasters, then 'transpose = true', for all other
   // types, array = FALSE
   //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  SEXP rarray = R_NilValue;
+  int result_type = -1;
+  int *iter_count = NULL;
+  bool free_iter_count = false;
   bool transposed = false;
-  if (TYPEOF(result_) == STRSXP && 
-      Rf_length(result_) == 1) {
+  if (TYPEOF(result_) == STRSXP && Rf_length(result_) == 1) {
+    // User has specified the name of the type they want returned
     const char *result = CHAR(STRING_ELT(result_, 0));
     if (strcmp(result, "nativeraster") == 0 || strcmp(result, "nara") == 0) {
       transposed = true;
-    } 
+      rarray = PROTECT(Rf_allocMatrix(INTSXP, height, width)); nprotect++;
+      iter_count = INTEGER(rarray);
+      result_type = TYPE_NARA;
+    } else if (strcmp(result, "int") == 0) {
+      rarray = PROTECT(Rf_allocMatrix(INTSXP, height, width)); nprotect++;
+      iter_count = INTEGER(rarray);
+      result_type = TYPE_INT;
+    } else if (strcmp(result, "dbl") == 0) {
+      iter_count = calloc((size_t)(width * height), sizeof(int));
+      free_iter_count = true;
+      result_type = TYPE_DBL;
+    } else {
+      Rf_error("'result' string type not yet handled: %s", result);
+    }
+  } else if (Rf_isMatrix(result_)) {
+    Rf_error("julia_(): pre-allocated matrix return type not yet handled");
+  } else {
+    Rf_error("julia_(): TYPEOF(result) not handled: %s", Rf_type2char(TYPEOF(result_)));
   }
-
-  //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  // Prepare storage space for result
-  //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  int actual_max_iter = 1; // avoid a corner case where num iters = 0
-  int *iter_count = calloc((size_t)(width * height), sizeof(int));
+  
   if (iter_count == NULL) {
-    Rf_error("julia_(): Could not allocate memory for 'iters'");
+    Rf_error("julia_(): Could not allocate memory for 'iter_count'");
   }
+  
   
   //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   // Call the core julia routine.
   //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  int actual_max_iter = 1; // avoid a corner case where num iters = 0
   if (transposed) {
     julia_core_tranposed(c_re, c_im,
                          x, y, zoom,
@@ -194,51 +215,36 @@ SEXP julia_(SEXP c_re_, SEXP c_im_,
   //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   // Create return structure
   //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  SEXP rarray = R_NilValue;
-  int *iter_ptr = NULL;
-  if (TYPEOF(result_) == STRSXP && Rf_length(result_) == 1) {
-    // 'int', 'dbl', 'raw'
-    const char *result = CHAR(STRING_ELT(result_, 0));
-    if (strcmp(result, "raw") == 0) {
-      PROTECT(rarray = Rf_allocMatrix(RAWSXP, height, width)); nprotect++;
-      uint8_t *raw_ptr = RAW(rarray);
-      
-      iter_ptr = iter_count;
-      
-      for (int i = 0; i < height * width; i++) {
-        *raw_ptr++ = (uint8_t)round(*iter_ptr++/(double)actual_max_iter * 255);
-      }
-    } else if (strcmp(result, "int") == 0) {
-      PROTECT(rarray = Rf_allocMatrix(INTSXP, height, width)); nprotect++;
-      memcpy(INTEGER(rarray), iter_count, height * width * sizeof(int));
-    } else if (strcmp(result, "dbl") == 0) {
-      PROTECT(rarray = Rf_allocMatrix(REALSXP, height, width)); nprotect++;
-      double *ptr = REAL(rarray);
-      
-      iter_ptr = iter_count;
-      
-      for (int i = 0; i < height * width; i++) {
-        *ptr++ = (double)(*iter_ptr++/(double)actual_max_iter);
-      }
-    } else if (strcmp(result, "nativeraster") == 0 || strcmp(result, "nara") == 0) {
-      PROTECT(rarray = Rf_allocMatrix(INTSXP, height, width)); nprotect++;
-      int *ptr = INTEGER(rarray);
-      iter_ptr = iter_count;
-      for (int i = 0; i < height * width; i++) {
-        int idx = round(*iter_ptr++/(double)actual_max_iter * 255);
-        *ptr++ = default_packed_cols[idx];
-      }
-      Rf_setAttrib(rarray, R_ClassSymbol, Rf_mkString("nativeRaster"));
-    } else {
-      Rf_error("'result' string type not yet handled: %s", result);
+  if (result_type == TYPE_INT) {
+    // return as-is
+  } else if (result_type == TYPE_DBL) {
+    PROTECT(rarray = Rf_allocMatrix(REALSXP, height, width)); nprotect++;
+    double *ptr = REAL(rarray);
+    
+    int *iter_ptr = iter_count;
+    
+    for (int i = 0; i < height * width; i++) {
+      *ptr++ = (double)(*iter_ptr++/(double)actual_max_iter);
     }
-  } else {
-    Rf_error("'result' not handled");
-  }
-
-
-
-  free(iter_count);
+  } else if (result_type == TYPE_NARA) {
+    for (int i = 0; i < height * width; i++) {
+      int idx = round(iter_count[i]/(double)actual_max_iter * 255);
+      iter_count[i] = default_packed_cols[idx];
+    }
+    Rf_setAttrib(rarray, R_ClassSymbol, Rf_mkString("nativeRaster"));
+  } 
+  
+  
+  //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  // If we had to allocate an integer vector just to hold the iteraction count
+  // then free it.
+  //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  if (free_iter_count) free(iter_count);
+  
+  
+  //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  // Tidy and return
+  //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   UNPROTECT(nprotect);
   return rarray;
 }
