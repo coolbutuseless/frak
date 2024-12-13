@@ -6,26 +6,24 @@ NULL
 
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-#' Generate a julia set
+#' Generate a Julia Set
 #'
-#' This function generates Julia fractals as an array of raw values.  The
-#' values represent the number of iterations performed before the values at
-#' the pixel location iterated towards infinity.  It is not a raw count of iterations,
-#' but rather the count of iterations scaled to be a maximum of 255 - and thus
-#' the data fits in a \code{raw} vector.
+#' This function generates a fractal image - the value at each location 
+#' represents the number of iterations performed before the function
+#' evaluation tends towards infinity.  
 #'
 #' @param c_re,c_im real and imaginary components of 'c'. Default [-0.7, 0.27015]
-#' @param width,height size of the image
+#' @param width,height size of the output image default: 400x400
 #' @param zoom zoom level. default 1.
 #' @param x,y offsets in centre position Default [0, 0]
-#' @param max_iter maximum number of iterations. Default: 256
-#' @param result 'int', 'dbl', 'nativeraster', 'raster' OR an array of the
-#'        right type which will be filled with the result.  If an array 
-#'        is provided its dimensions will override the \code{size}
-#'        argument.
-#' @param colors if type is 'raster' or 'nativeraster', then this is the
-#'        colour palette to use. If not provided, a default
-#'        palette will be used.
+#' @param max_iter maximum number of iterations. Default: 255
+#' @param result 'int', 'dbl', 'nativeraster' (or 'nara').
+#' \describe{
+#'   \item{\code{'int'}}{The integer matrix returned is a record of the raw counts}
+#'   \item{\code{'dbl'}}{The iteraction counts are normalised to be in the range [0, 1]}
+#'   \item{\code{'nativeraster'}}{The matrix is returned as a native raster with the 
+#'   colors specified in the \code{colors} argument (not yet implemented)}
+#' }
 #'
 #' @return raw vector with dimensions (size, size)
 #' @examples
@@ -36,14 +34,14 @@ NULL
 julia <- function(c_re = -0.7, c_im = 0.27015, 
                   x = 0, y = 0, zoom = 1,
                   width = 400, height = 400, 
-                  max_iter = 255, result = 'int', colors = NULL) {
+                  max_iter = 255, result = 'int') {
   
   .Call(
     julia_, 
     c_re, c_im,
     x, y, zoom,
     width, height,
-    max_iter, result, colors
+    max_iter, result, NULL
   )
 }
 

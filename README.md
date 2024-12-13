@@ -10,7 +10,7 @@
 [![R-CMD-check](https://github.com/coolbutuseless/frak/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/coolbutuseless/frak/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
-`frak` is a small R package to generate fractals - currently just [Julia
+`frak` is an R package which generates fractals - currently just [Julia
 Sets](https://en.wikipedia.org/wiki/Julia_set).
 
 I needed a fast way to generate test images for testing other software,
@@ -35,14 +35,7 @@ remotes::install_github('coolbutuseless/frak')
 
 ## What’s in the box?
 
-- `julia(cx, cy, movex, movey, zoom, size, max_iter)` generate a julia
-  set, where `cx` and `cy` are the components of imaginary iteration
-  variable *c*.
-
-Returned array of raw values represents the iteration count at which a
-particular location veered towards infinity. These values are scaled to
-span the full range from allowable within a raw vector (i.e. the whole
-numbers from 0 to 255)
+- `julia()` generate a julia set.
 
 ## Example: Generate a julia set
 
@@ -166,9 +159,9 @@ res <- bench::mark(
 
 | expression          |      min |   median |    itr/sec |
 |:--------------------|---------:|---------:|-----------:|
-| Julia::JuliaImage() | 288.88ms | 290.35ms |   3.444074 |
-| frak::julia()       |   2.26ms |   2.35ms | 420.138483 |
-| frack::julia_r()    |  45.08ms |  48.06ms |  19.690096 |
+| Julia::JuliaImage() | 292.34ms | 292.83ms |   3.414975 |
+| frak::julia()       |   2.26ms |   2.33ms | 422.441739 |
+| frack::julia_r()    |  43.64ms |  46.78ms |  20.304937 |
 
 <img src="man/figures/README-unnamed-chunk-6-1.png" width="100%" />
 

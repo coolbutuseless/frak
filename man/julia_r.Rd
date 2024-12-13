@@ -11,7 +11,7 @@ julia_r(c_re = -0.7, c_im = 0.27015, size = 400, max_iter = 255)
 
 \item{size}{width and height of the square image.}
 
-\item{max_iter}{maximum number of iterations. Default: 256}
+\item{max_iter}{maximum number of iterations. Default: 255}
 }
 \value{
 matrix of iteration count
