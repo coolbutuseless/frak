@@ -47,3 +47,13 @@ julia <- function(c_re = -0.7, c_im = 0.27015,
   )
 }
 
+
+if (FALSE) {
+  
+  im <- julia(result = 'int', width = 400, height = 200, zoom = 1)
+  plot(as.raster(im/max(im)))
+
+  julia(width = 400, height = 200, zoom = 1, result = 'nara') |> grid::grid.raster()
+    
+}
+

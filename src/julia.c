@@ -138,7 +138,7 @@ SEXP julia_(SEXP c_re_, SEXP c_im_,
         *ptr++ = (double)(*iter_ptr++/(double)max_iter_count);
       }
     } else if (strcmp(result, "nativeraster") == 0 || strcmp(result, "nara") == 0) {
-      PROTECT(rarray = Rf_allocMatrix(INTSXP, height, width)); nprotect++;
+      PROTECT(rarray = Rf_allocMatrix(INTSXP, width, height)); nprotect++;
       int *ptr = INTEGER(rarray);
       iter_ptr = iter_count;
       for (int i = 0; i < height * width; i++) {
