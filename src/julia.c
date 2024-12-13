@@ -53,24 +53,31 @@ int default_packed_cols[256] = {
   -1
 };
 
+#define MIN(a,b) (((a)<(b))?(a):(b))
+#define MAX(a,b) (((a)>(b))?(a):(b))
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-SEXP julia_(SEXP cx_, SEXP cy_, SEXP movex_, SEXP movey_, SEXP zoom_, SEXP size_, 
-            SEXP max_iter_, SEXP result_, SEXP colors_) {
+SEXP julia_(SEXP c_re_, SEXP c_im_, 
+            SEXP x_, SEXP y_, SEXP zoom_,
+            SEXP width_, SEXP height_, 
+            SEXP max_iter_, 
+            SEXP result_, SEXP colors_) {
 
   int nprotect = 0;
   
-  int size     = Rf_asInteger(size_);
-  double zoom  = Rf_asReal(zoom_);
-  double cx    = Rf_asReal(cx_); // -0.7;
-  double cy    = Rf_asReal(cy_); // 0.27015;
-  double movex = Rf_asReal(movex_);
-  double movey = Rf_asReal(movey_);
-  int max_iter = Rf_asInteger(max_iter_);
+  int width      = Rf_asInteger(width_);
+  int height     = Rf_asInteger(height_);
+  int size       = MAX(width, height);
+  double zoom    = Rf_asReal(zoom_);
+  double c_re    = Rf_asReal(c_re_); // -0.7;
+  double c_im    = Rf_asReal(c_im_); // 0.27015;
+  double x       = Rf_asReal(x_);
+  double y       = Rf_asReal(y_);
+  int max_iter   = Rf_asInteger(max_iter_);
 
-  double idenom = 1.5/(0.5 * zoom * size);
+  double idenom = 2/(0.5 * zoom * size);
 
   int max_iter_count = 1;
 
@@ -80,16 +87,16 @@ SEXP julia_(SEXP cx_, SEXP cy_, SEXP movex_, SEXP movey_, SEXP zoom_, SEXP size_
   }
   int *iter_ptr = iter_count;
 
-  for (int x=0; x < size; x++) {
-    for (int y = 0; y < size; y++) {
-      double zx = (x - size/2) * idenom + movex;
-      double zy = (y - size/2) * idenom + movey;
+  for (int col = 0; col < size; ++col) {
+    for (int row = 0; row < size; ++row) {
+      double re = (col - size/2) * idenom + x;
+      double im = (row - size/2) * idenom + y;
 
       int niter = 0;
-      while( (zx * zx + zy * zy < 4) & (niter < max_iter)) {
-        double tmp = zx * zx - zy * zy + cx;
-        zy = 2 * zx * zy + cy;
-        zx = tmp;
+      while( (re * re + im * im < 4) & (niter < max_iter)) {
+        double tmp = re * re - im * im + c_re;
+        im = 2 * re * im + c_im;
+        re = tmp;
         niter++;
       }
 

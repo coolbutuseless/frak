@@ -3,15 +3,15 @@
 #include <R.h>
 #include <Rinternals.h>
 
-extern SEXP julia_(SEXP cx_, SEXP cy_, 
-                   SEXP movex_, SEXP movey_, 
-                   SEXP zoom_, SEXP size_, 
-                   SEXP max_iter_, SEXP result_,
-                   SEXP colors_);
+extern SEXP julia_(SEXP c_re_, SEXP c_im_, 
+                   SEXP x_, SEXP y_, SEXP zoom_,
+                   SEXP width_, SEXP height_, 
+                   SEXP max_iter_, 
+                   SEXP result_, SEXP colors_);
 
 static const R_CallMethodDef CEntries[] = {
   // name    pointer            Num args
-  {"julia_" , (DL_FUNC) &julia_ , 9},
+  {"julia_" , (DL_FUNC) &julia_ , 10},
 
   {NULL , NULL, 0}
 };

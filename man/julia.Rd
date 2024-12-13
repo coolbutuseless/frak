@@ -5,25 +5,26 @@
 \title{Generate a julia set}
 \usage{
 julia(
-  cx = -0.7,
-  cy = 0.27015,
-  movex = 0,
-  movey = 0,
+  c_re = -0.7,
+  c_im = 0.27015,
+  x = 0,
+  y = 0,
   zoom = 1,
-  size = 400,
+  width = 400,
+  height = 400,
   max_iter = 255,
-  result = "raw",
+  result = "int",
   colors = NULL
 )
 }
 \arguments{
-\item{cx, cy}{real and imaginary components of 'c'. Default [-0.7, 0.27015]}
+\item{c_re, c_im}{real and imaginary components of 'c'. Default [-0.7, 0.27015]}
 
-\item{movex, movey}{offsets in centre position Default [0, 0]}
+\item{x, y}{offsets in centre position Default [0, 0]}
 
 \item{zoom}{zoom level. default 1.}
 
-\item{size}{width and height of resulting square array. Default: 400}
+\item{width, height}{size of the image}
 
 \item{max_iter}{maximum number of iterations. Default: 256}
 
@@ -47,7 +48,6 @@ but rather the count of iterations scaled to be a maximum of 255 - and thus
 the data fits in a \code{raw} vector.
 }
 \examples{
-js <- julia()
-mode(js) <- 'integer'
-plot(as.raster(js/255))
+im <- julia(result = 'int')
+plot(as.raster(im/max(im)))
 }

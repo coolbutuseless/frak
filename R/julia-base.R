@@ -7,6 +7,7 @@
 #' order to achieve novel renderings.
 #'
 #' @inheritParams julia
+#' @param size width and height of the square image.
 #' @return matrix of iteration count
 #' @examples
 #' # Calculate number of iterations for each location with default parameters
@@ -24,7 +25,7 @@
 #' plot(as.raster(z), interpolate = FALSE)
 #' @export
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-julia_r <- function(cx = -0.7, cy = 0.27015, size = 400, max_iter = 255) {
+julia_r <- function(c_re = -0.7, c_im = 0.27015, size = 400, max_iter = 255) {
   
   N <- size
 
@@ -59,8 +60,8 @@ julia_r <- function(cx = -0.7, cy = 0.27015, size = 400, max_iter = 255) {
     yt <- y[idx]
     
     # Iterative calculation
-    tmp    <- xt * xt - yt * yt + cx 
-    y[idx] <- 2 * xt * yt + cy       
+    tmp    <- xt * xt - yt * yt + c_re 
+    y[idx] <- 2 * xt * yt + c_im       
     x[idx] <- tmp
   }
   

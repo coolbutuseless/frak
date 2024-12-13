@@ -14,10 +14,10 @@ NULL
 #' but rather the count of iterations scaled to be a maximum of 255 - and thus
 #' the data fits in a \code{raw} vector.
 #'
-#' @param cx,cy real and imaginary components of 'c'. Default [-0.7, 0.27015]
-#' @param size width and height of resulting square array. Default: 400
+#' @param c_re,c_im real and imaginary components of 'c'. Default [-0.7, 0.27015]
+#' @param width,height size of the image
 #' @param zoom zoom level. default 1.
-#' @param movex,movey offsets in centre position Default [0, 0]
+#' @param x,y offsets in centre position Default [0, 0]
 #' @param max_iter maximum number of iterations. Default: 256
 #' @param result 'int', 'dbl', 'nativeraster', 'raster' OR an array of the
 #'        right type which will be filled with the result.  If an array 
@@ -29,13 +29,27 @@ NULL
 #'
 #' @return raw vector with dimensions (size, size)
 #' @examples
-#' js <- julia()
-#' mode(js) <- 'integer'
-#' plot(as.raster(js/255))
+#' im <- julia(result = 'int')
+#' plot(as.raster(im/max(im)))
 #' @export
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-julia <- function(cx = -0.7, cy = 0.27015, movex = 0, movey = 0, zoom = 1,
-                  size = 400, max_iter = 255, result = 'raw', colors = NULL) {
-  .Call(julia_, cx, cy, movex, movey, zoom, size, max_iter, result, colors)
+julia <- function(c_re = -0.7, c_im = 0.27015, 
+                  x = 0, y = 0, zoom = 1,
+                  width = 400, height = 400, 
+                  max_iter = 255, result = 'int', colors = NULL) {
+  
+  # SEXP c_re_, SEXP c_im_, 
+  # SEXP x_, SEXP y_, SEXP zoom_,
+  # SEXP width_, SEXP height_, 
+  # SEXP max_iter_, 
+  # SEXP result_, SEXP colors_
+  
+  .Call(
+    julia_, 
+    c_re, c_im,
+    x, y, zoom,
+    width, height,
+    max_iter, result, colors
+  )
 }
 

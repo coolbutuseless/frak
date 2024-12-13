@@ -4,12 +4,12 @@
 \alias{julia_r}
 \title{Calculate Julia set using base R matrix operations}
 \usage{
-julia_r(cx = -0.7, cy = 0.27015, size = 400, max_iter = 255)
+julia_r(c_re = -0.7, c_im = 0.27015, size = 400, max_iter = 255)
 }
 \arguments{
-\item{cx, cy}{real and imaginary components of 'c'. Default [-0.7, 0.27015]}
+\item{c_re, c_im}{real and imaginary components of 'c'. Default [-0.7, 0.27015]}
 
-\item{size}{width and height of resulting square array. Default: 400}
+\item{size}{width and height of the square image.}
 
 \item{max_iter}{maximum number of iterations. Default: 256}
 }
