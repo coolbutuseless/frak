@@ -7,7 +7,6 @@
 #' order to achieve novel renderings.
 #'
 #' @inheritParams julia
-#' @param size width and height of the square image.
 #' @return matrix of iteration count
 #' @examples
 #' # Calculate number of iterations for each location with default parameters
@@ -25,20 +24,18 @@
 #' plot(as.raster(z), interpolate = FALSE)
 #' @export
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-julia_r <- function(c_re = -0.7, c_im = 0.27015, size = 400, max_iter = 255) {
-  
-  N <- size
+julia_r <- function(c_re = -0.7, c_im = 0.27015, width = 400, height = 200, max_iter = 255) {
 
   # Define the (x, y) grid of coordiantes
-  x <- matrix(seq(-2, 2, length.out = N), N, N, byrow = TRUE)
-  y <- matrix(seq(-2, 2, length.out = N), N, N, byrow = FALSE)
+  x <- matrix(seq(-2, 2, length.out =  width), height, width, byrow = TRUE)
+  y <- matrix(seq(-2, 2, length.out = height), height, width, byrow = FALSE)
   
   # Where is the iteration still valid (i.e. hasn't diverged to infinity)
-  valid <- rep(T, N * N)
+  valid <- rep(T, height * width)
   idx   <- which(valid)
   
   # A matrix to hold the iteration count
-  iter  <- matrix(0L, N, N)
+  iter  <- matrix(0L, height, width)
   
   for (i in seq(max_iter)) {
     # Just calculate on the (x,y) which are still valid
@@ -75,15 +72,19 @@ if (FALSE) {
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   # Simple plot
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  iter <- julia_r()
+  
   cols <- viridisLite::viridis(256, begin = 0.1, end = 0.9)
   cols <- terrain.colors(256) 
   
   z <- round( (iter / max(iter)) ^ 0.25 * 255) + 1
   z[] <- cols[z]
   plot(as.raster(z), interpolate = FALSE)
-  
-  z <- sqrt(x * x + y * y)
-  z <- round((z / max(z)) ^ gamma * 255) + 1
-  z[] <- cols[z]
-  plot(as.raster(z), interpolate = FALSE)
 }
+
+
+
+
+
+
+
