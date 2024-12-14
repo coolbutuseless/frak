@@ -158,7 +158,7 @@ size <- 400
 res <- bench::mark(
   `Julia::JuliaImage()` = Julia::JuliaImage(imageN = size, centre = 0.0, L = 4, C = 1-1.6180339887),
   `frak::julia()`       = julia(max_iter = 50),
-  `frack::julia_r()`    = julia_r(max_iter = 50),
+  `frak::julia_r()`    = julia_r(max_iter = 50),
   check = FALSE
 )
 ```

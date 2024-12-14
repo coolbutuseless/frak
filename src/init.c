@@ -7,7 +7,7 @@ extern SEXP julia_(SEXP c_re_, SEXP c_im_,
                    SEXP x_, SEXP y_, SEXP zoom_,
                    SEXP width_, SEXP height_, 
                    SEXP max_iter_, 
-                   SEXP result_, SEXP colors_);
+                   SEXP result_, SEXP palette_);
 
 static const R_CallMethodDef CEntries[] = {
   // name    pointer            Num args

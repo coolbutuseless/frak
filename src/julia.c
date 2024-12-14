@@ -144,7 +144,7 @@ SEXP julia_(SEXP c_re_, SEXP c_im_,
             SEXP x_, SEXP y_, SEXP zoom_,
             SEXP width_, SEXP height_, 
             SEXP max_iter_, 
-            SEXP result_, SEXP colors_) {
+            SEXP result_, SEXP palette_) {
   
   int nprotect = 0;
   
@@ -175,6 +175,7 @@ SEXP julia_(SEXP c_re_, SEXP c_im_,
     if (strcmp(result, "nativeraster") == 0 || strcmp(result, "nara") == 0) {
       transposed = true;
       rarray = PROTECT(Rf_allocMatrix(INTSXP, height, width)); nprotect++;
+      Rf_setAttrib(rarray, R_ClassSymbol, Rf_mkString("nativeRaster"));
       iter_count = INTEGER(rarray);
       result_type = TYPE_NARA;
     } else if (strcmp(result, "int") == 0) {
@@ -188,8 +189,13 @@ SEXP julia_(SEXP c_re_, SEXP c_im_,
     } else {
       Rf_error("'result' string type not yet handled: %s", result);
     }
-  } else if (Rf_isMatrix(result_)) {
-    Rf_error("julia_(): pre-allocated matrix return type not yet handled");
+  } else if (Rf_isMatrix(result_) && Rf_inherits(result_, "nativeRaster")) {
+    iter_count = INTEGER(result_); // user supplied a nativeRaster. Use it for storage
+    result_type = TYPE_NARA;
+    width = Rf_nrows(result_);
+    height = Rf_ncols(result_);
+    rarray = result_;
+    transposed = true;
   } else {
     Rf_error("julia_(): TYPEOF(result) not handled: %s", Rf_type2char(TYPEOF(result_)));
   }
@@ -236,7 +242,6 @@ SEXP julia_(SEXP c_re_, SEXP c_im_,
       int idx = round(iter_count[i]/(double)actual_max_iter * 255);
       iter_count[i] = default_packed_cols[idx];
     }
-    Rf_setAttrib(rarray, R_ClassSymbol, Rf_mkString("nativeRaster"));
   } 
   
   

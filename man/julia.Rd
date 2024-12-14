@@ -10,9 +10,9 @@ julia(
   x = 0,
   y = 0,
   zoom = 1,
-  width = 400,
-  height = 400,
-  max_iter = 255,
+  width = 400L,
+  height = 400L,
+  max_iter = 255L,
   result = "int"
 )
 }
