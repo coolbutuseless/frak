@@ -13,7 +13,8 @@ julia(
   width = 400L,
   height = 400L,
   max_iter = 255L,
-  result = "int"
+  result = "int",
+  palette = NULL
 )
 }
 \arguments{
@@ -29,10 +30,17 @@ julia(
 
 \item{result}{'int', 'dbl', 'nativeraster' (or 'nara').
 \describe{
-  \item{\code{'int'}}{The integer matrix returned is a record of the raw counts}
-  \item{\code{'dbl'}}{The iteraction counts are normalised to be in the range [0, 1]}
-  \item{\code{'nativeraster'}}{The matrix is returned as a native raster with the 
-  colors specified in the \code{colors} argument (not yet implemented)}
+  \item{\code{'int'}}{The integer matrix returned is a record of the raw iteration counts}
+  \item{\code{'dbl'}}{The iteraction counts are normalised to the range [0, 1]}
+  \item{\code{'nativeraster'}}{The matrix of iteraction counts is returned as a native raster with the 
+  counts mapped to a sequence of colors specified in the \code{colors} argument}
+}}
+
+\item{palette}{vector of color values for mapping to native raster output.  If
+       no value specified, a default greyscale palette (256 colours) is used.
+\itemize{
+  \item{character vector of hex colou}
+  \item{integer vector of packed RGBA values}
 }}
 }
 \value{

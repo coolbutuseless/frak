@@ -189,13 +189,26 @@ SEXP julia_(SEXP c_re_, SEXP c_im_,
     } else {
       Rf_error("'result' string type not yet handled: %s", result);
     }
-  } else if (Rf_isMatrix(result_) && Rf_inherits(result_, "nativeRaster")) {
-    iter_count = INTEGER(result_); // user supplied a nativeRaster. Use it for storage
-    result_type = TYPE_NARA;
-    width = Rf_nrows(result_);
-    height = Rf_ncols(result_);
-    rarray = result_;
-    transposed = true;
+  } else if (Rf_isMatrix(result_)) {
+    if (Rf_inherits(result_, "nativeRaster")) {
+      iter_count = INTEGER(result_); // user supplied a nativeRaster. Use it for storage
+      result_type = TYPE_NARA;
+      width = Rf_nrows(result_);
+      height = Rf_ncols(result_);
+      rarray = result_;
+      transposed = true;
+      bool free_iter_count = false;
+    } else if (Rf_isInteger(result_)) {
+      iter_count = INTEGER(result_);
+      result_type = TYPE_INT;
+      width = Rf_ncols(result_);
+      height = Rf_nrows(result_);
+      rarray = result_;
+      transposed = false;
+      bool free_iter_count = false;
+    } else {
+      Rf_error("julia_(): Matrix with this type not handled: %s", Rf_type2char(TYPEOF(result_)));
+    }
   } else {
     Rf_error("julia_(): TYPEOF(result) not handled: %s", Rf_type2char(TYPEOF(result_)));
   }
