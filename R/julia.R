@@ -24,8 +24,9 @@ NULL
 #'   \item{\code{'nativeraster'}}{The matrix of iteraction counts is returned as a native raster with the 
 #'   counts mapped to a sequence of colors specified in the \code{colors} argument}
 #' }
-#' @param palette vector of color values for mapping to native raster output.  If
+#' @param palette integer vector of colours values for mapping to native raster output.  If
 #'        no value specified, a default greyscale palette (256 colours) is used.
+#'        E.g. \code{farver::encode_native(c('red', 'white', 'blue'))}
 #' \itemize{
 #'   \item{character vector of hex colou}
 #'   \item{integer vector of packed RGBA values}
@@ -70,11 +71,13 @@ if (FALSE) {
   N  <- 30
   x  <- displease::seq_ease(0, 0.03, n = N)
   y  <- displease::seq_ease(0, 0.02, n = N, type = 'quad')
-  zoom <- displease::seq_ease(1, 1000, n = N, type = 'exp', direction = 'in')
+  zoom <- displease::seq_ease(1, 100, n = N, type = 'exp', direction = 'in')
 
+  palette <- colorfast::col_to_int(rainbow(100))
+  
   for (i in seq_along(x)) {
     cat(".")
-    julia(result = nr, x = x[i], y = y[i], zoom = zoom[i], max_iter = 256 + i * 4)
+    julia(result = nr, x = x[i], y = y[i], zoom = zoom[i], max_iter = 256 + i * 4, palette = palette)
     dev.hold()
     grid.raster(nr)   
     dev.flush()

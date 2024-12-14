@@ -161,6 +161,13 @@ SEXP julia_(SEXP c_re_, SEXP c_im_,
   int max_iter   = Rf_asInteger(max_iter_);
   
   //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  // 
+  //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  if (! (Rf_isNull(palette_) || Rf_isInteger(palette_)) ) {
+    Rprintf("julia_(): 'palette' must be integer vector or NULL");
+  }
+  
+  //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   // If working with native rasters, then 'transpose = true', for all other
   // types, array = FALSE
   //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -197,7 +204,7 @@ SEXP julia_(SEXP c_re_, SEXP c_im_,
       height = Rf_ncols(result_);
       rarray = result_;
       transposed = true;
-      bool free_iter_count = false;
+      free_iter_count = false;
     } else if (Rf_isInteger(result_)) {
       iter_count = INTEGER(result_);
       result_type = TYPE_INT;
@@ -205,7 +212,7 @@ SEXP julia_(SEXP c_re_, SEXP c_im_,
       height = Rf_nrows(result_);
       rarray = result_;
       transposed = false;
-      bool free_iter_count = false;
+      free_iter_count = false;
     } else {
       Rf_error("julia_(): Matrix with this type not handled: %s", Rf_type2char(TYPEOF(result_)));
     }
@@ -251,9 +258,18 @@ SEXP julia_(SEXP c_re_, SEXP c_im_,
       *ptr++ = (double)(*iter_ptr++/(double)actual_max_iter);
     }
   } else if (result_type == TYPE_NARA) {
+    int *packed_cols = NULL;
+    int ncols = 0;
+    if (Rf_isNull(palette_)) {
+      packed_cols = default_packed_cols;
+      ncols = 256;
+    } else {
+      packed_cols = INTEGER(palette_);
+      ncols = Rf_length(palette_);
+    }
     for (int i = 0; i < height * width; i++) {
-      int idx = round(iter_count[i]/(double)actual_max_iter * 255);
-      iter_count[i] = default_packed_cols[idx];
+      int idx = round(iter_count[i]/(double)actual_max_iter * (ncols - 1));
+      iter_count[i] = packed_cols[idx];
     }
   } 
   

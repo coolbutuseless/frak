@@ -36,8 +36,9 @@ julia(
   counts mapped to a sequence of colors specified in the \code{colors} argument}
 }}
 
-\item{palette}{vector of color values for mapping to native raster output.  If
+\item{palette}{integer vector of colours values for mapping to native raster output.  If
        no value specified, a default greyscale palette (256 colours) is used.
+       E.g. \code{farver::encode_native(c('red', 'white', 'blue'))}
 \itemize{
   \item{character vector of hex colou}
   \item{integer vector of packed RGBA values}
